@@ -1,0 +1,14 @@
+{
+  "name": "sohees-kitchen-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "seed": "node --env-file=.env scripts/seed.mjs",
+    "load-menu": "node --env-file=.env scripts/load-menu.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.109.0",
+    "ws": "^8.22.0"
+  }
+}

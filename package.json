@@ -7,7 +7,8 @@
     "seed": "node --env-file=.env scripts/seed.mjs",
     "load-menu": "node --env-file=.env scripts/load-menu.mjs",
     "report": "node --env-file=.env scripts/day-report.mjs",
-    "reset-test-data": "node --env-file=.env scripts/reset-test-data.mjs"
+    "reset-test-data": "node --env-file=.env scripts/reset-test-data.mjs",
+    "load-sohees-menu": "node --env-file=.env scripts/sohees-menu.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.109.0",

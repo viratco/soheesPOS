@@ -10,6 +10,14 @@ import ws from "ws";
 // d = diet: v veg · e egg · n non-veg   |  opts: best (Best Seller), spicy, custom (has options on DotPe)
 const v = "veg", e = "egg", n = "nonveg";
 
+// Option group: name, min picks, max picks, [choice, extra ₹]
+const O = (name, min, max, choices) => ({ name, min, max, choices: choices.map(([c, rs = 0]) => ({ name: c, price: rs * 100 })) });
+const VEG_CHICKEN_PORK = (chicken, pork) => [O("Choice", 1, 1, [["Veg"], ["Chicken", chicken], ["Pork", pork]])];
+const HALF_FULL_SAUCES = [
+  O("Choice", 1, 1, [["Half"], ["Full", 140]]),
+  O("Add On", 0, 3, [["Jja Jang Sauce", 50], ["Honey Butter", 50], ["Yum Yum Sauce", 50]]),
+];
+
 export const MENU = [
   {
     name: "Beverages",
@@ -36,7 +44,7 @@ export const MENU = [
         ["Voodoo Mango", 235, v, null, { check: "Spelled 'Vodoo Mango' on DotPe" }],
         ["Son of a Beach", 300, v],
       ],
-      "Milk Shake": [["Milk Shake", 290, v, null, { custom: true }]],
+      "Milk Shake": [["Milk Shake", 290, v, null, { options: [O("Flavour", 1, 1, [["Taro"], ["Thai Tea"], ["Tiramisu"], ["Hazelnut"]])] }]],
     },
   },
   {
@@ -64,12 +72,12 @@ export const MENU = [
         ["Egg Kimchi Fried Rice", 370, e],
         ["Chicken Kimchi Fried Rice", 430, n],
       ],
-      Bibimbap: [["Bibimbap", 460, v, null, { custom: true }]],
+      Bibimbap: [["Bibimbap", 460, v, null, { options: VEG_CHICKEN_PORK(50, 80) }]],
       Pastas: [
-        ["Penne Arrabbiata", 410, v, null, { custom: true }],
-        ["Penne Alfredo", 410, v, null, { custom: true }],
+        ["Penne Arrabbiata", 410, v, null, { options: [O("Choice", 1, 1, [["Veg"], ["Non Veg", 60]])] }],
+        ["Penne Alfredo", 410, v, null, { options: [O("Choice", 1, 1, [["Veg"], ["Non Veg", 60]])] }],
       ],
-      "Jja Jangbap": [["Jja Jangbap", 390, v, null, { custom: true }]],
+      "Jja Jangbap": [["Jja Jangbap", 390, v, null, { options: VEG_CHICKEN_PORK(60, 110) }]],
     },
   },
   {
@@ -93,12 +101,16 @@ export const MENU = [
         ["Veg Pan Fried Chilli Mandu", 520, v, null, { spicy: true }],
         ["Chicken Pan Fried Chilli Mandu", 580, n, null, { spicy: true }],
       ],
-      Tteokbokki: [["Tteokbokki", 410, v, "Chewy Korean rice cakes simmered in a rich, spicy sauce", { custom: true }]],
-      "Fried Chicken": [
-        ["Chicken Wings", 350, n, null, { custom: true }],
-        ["Fried Chicken Boneless", 450, n, "Boneless", { best: true, custom: true }],
+      Tteokbokki: [
+        ["Tteokbokki", 410, v, "Chewy Korean rice cakes simmered in a rich, spicy sauce", {
+          options: [O("Sauce", 1, 1, [["Sweet & Spicy Sauce"], ["Cheese", 50], ["Jja Jang Sauce", 80]])],
+        }],
       ],
-      Onigiri: [["Onigiri", 440, v, null, { best: true, custom: true, check: "VEG mark in Best Seller, NON-VEG mark under Signatures. Which is it?" }]],
+      "Fried Chicken": [
+        ["Chicken Wings", 350, n, null, { options: HALF_FULL_SAUCES }],
+        ["Fried Chicken Boneless", 450, n, "Boneless", { best: true, options: HALF_FULL_SAUCES }],
+      ],
+      Onigiri: [["Onigiri", 440, v, null, { best: true, options: VEG_CHICKEN_PORK(50, 80) }]],
     },
   },
   {
@@ -126,15 +138,15 @@ export const MENU = [
         ["Chicken Ramen", 450, n],
         ["Egg Ramen", 390, e],
         ["Veg Ramen", 360, v],
-        ["Kimchi Ramen", 390, v, null, { custom: true }],
+        ["Kimchi Ramen", 390, v, null, { custom: true, check: "Has options on DotPe. Please send a screenshot of them" }],
       ],
       Noodles: [
-        ["Jja Jangmyeon", 410, n, null, { custom: true }],
-        ["Japchae", 390, v, null, { custom: true }],
+        ["Jja Jangmyeon", 410, n, null, { custom: true, check: "Has options on DotPe. Please send a screenshot of them" }],
+        ["Japchae", 390, v, null, { custom: true, check: "Has options on DotPe. Please send a screenshot of them" }],
         ["Egg Fried Noodles", 440, e],
         ["Chicken Fried Noodles", 490, n],
         ["Veg Fried Noodles", 390, v],
-        ["Bang Bang Noodles", 410, v, null, { best: true, custom: true }],
+        ["Bang Bang Noodles", 410, v, null, { best: true, custom: true, check: "Has options on DotPe. Please send a screenshot of them" }],
         ["Veg Carbonara Buldak", 360, v],
         ["Chicken Carbonara Buldak", 410, n],
         ["Pork Carbonara Buldak", 500, n],
@@ -175,13 +187,14 @@ if (args.includes("--md")) {
       cur = r.category;
       console.log(`\n### ${cur}\n\n| Sub-category | Dish | Price | Type | Notes |\n|---|---|---|---|---|`);
     }
-    const notes = [r.best && "⭐ Best Seller", r.spicy && "🌶 Spicy", r.custom && "has options on DotPe", r.check && `❓ ${r.check}`].filter(Boolean).join(" · ");
+    const opts = (r.options ?? []).map((g) => `${g.name}: ${g.choices.map((c) => (c.price ? `${c.name} +₹${c.price / 100}` : c.name)).join(" / ")}`).join(" · ");
+    const notes = [r.best && "⭐ Best Seller", r.spicy && "🌶 Spicy", opts && `Options → ${opts}`, r.check && `❓ ${r.check}`].filter(Boolean).join(" · ");
     console.log(`| ${r.sub} | ${r.name} | ₹${r.rupees} | ${dietLabel[r.diet]} | ${notes} |`);
   }
   process.exit(0);
 }
 
-console.log(`${MENU.length} categories · ${all.length} dishes · ${all.filter((r) => r.best).length} best sellers · ${all.filter((r) => r.check).length} to confirm`);
+console.log(`${MENU.length} categories · ${all.length} dishes · ${all.filter((r) => r.best).length} best sellers · ${all.filter((r) => r.options?.length).length} with options · ${all.filter((r) => r.check).length} to confirm`);
 if (!args.includes("--yes")) {
   console.log("Dry run. Nothing changed. Run with --yes to replace the live menu.");
   process.exit(0);
@@ -215,6 +228,7 @@ for (const [ci, cat] of MENU.entries()) {
       is_bestseller: !!opts.best,
       moods: MOOD_BY_CATEGORY[cat.name] ?? [],
       subcategory: sub,
+      options: opts.options ?? [],
       sort_order: (++i) * 10,
     })),
   );

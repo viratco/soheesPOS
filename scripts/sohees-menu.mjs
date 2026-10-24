@@ -4,8 +4,12 @@
 // Usage:  npm run load-sohees-menu            → prints a summary only (dry run)
 //         npm run load-sohees-menu -- --yes   → replaces the live menu
 //         npm run load-sohees-menu -- --md    → prints the review table (Markdown)
+import { readFileSync } from "fs";
 import { createClient } from "@supabase/supabase-js";
 import ws from "ws";
+
+// Photos copied from the café's DotPe menu into our Supabase storage (bucket "menu-photos").
+const PHOTOS = JSON.parse(readFileSync(new URL("./sohees-menu-photos.json", import.meta.url), "utf8"));
 
 // d = diet: v veg · e egg · n non-veg   |  opts: best (Best Seller), spicy, custom (has options on DotPe)
 const v = "veg", e = "egg", n = "nonveg";
@@ -313,13 +317,16 @@ await must(db.from("menu_items").delete().not("id", "is", null));
 await must(db.from("menu_categories").delete().not("id", "is", null));
 
 for (const [ci, cat] of MENU.entries()) {
-  const [row] = await must(db.from("menu_categories").insert({ name: cat.name, sort_order: (ci + 1) * 10 }).select());
+  const [row] = await must(
+    db.from("menu_categories").insert({ name: cat.name, sort_order: (ci + 1) * 10, image_url: PHOTOS.categories[cat.name] ?? null }).select(),
+  );
   let i = 0;
   const items = Object.entries(cat.subs).flatMap(([sub, list]) =>
     list.map(([name, rupees, diet, desc, opts = {}]) => ({
       category_id: row.id,
       name,
       description: DESCRIPTIONS[name] ?? desc ?? null,
+      image_url: PHOTOS.dishes[name] ?? null,
       price_paise: rupees * 100,
       diet,
       spice_level: opts.spicy ? 2 : 0,

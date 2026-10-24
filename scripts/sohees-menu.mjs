@@ -97,7 +97,6 @@ export const MENU = [
       "Mandu (Momos)": [
         ["Chicken Mandu Momos", 470, n, "Korean-style dumplings, steamed or fried"],
         ["Veg Mandu Momos", 390, v, "Korean-style dumplings, steamed or fried"],
-        ["Bang Bang Mandus", 430, v, null, { best: true, custom: true, check: "₹430 VEG here, but the Best Seller list shows ₹370 NON-VEG. Which is right (or are they two dishes)?" }],
         ["Veg Pan Fried Chilli Mandu", 520, v, null, { spicy: true }],
         ["Chicken Pan Fried Chilli Mandu", 580, n, null, { spicy: true }],
       ],
@@ -159,17 +158,112 @@ export const MENU = [
       ],
     },
   },
-  // Desserts: there's a "Desserts" tile on DotPe, but the recording didn't open it. Items needed.
+  {
+    name: "Desserts",
+    subs: { Desserts: [["Nutella Cloud", 300, v]] },
+  },
 ];
 
-const MOOD_BY_CATEGORY = { Beverages: ["drink"], SIGNATURES: ["share"], "HOUSE FAVORITES": ["meal"], "Complete Plates": ["meal"], "RAMEN & MORE": ["meal"] };
+// Short description shown under each dish on the menu (owner can edit in Menu admin).
+export const DESCRIPTIONS = {
+  // Beverages · Hot
+  Chai: "Kadak chai brewed with milk and warm spices",
+  Americano: "Double espresso topped with hot water",
+  Cappuccino: "Espresso with steamed milk and a thick foam",
+  "Hot Choco": "Rich, creamy hot chocolate",
+  "Hot Coffee": "Classic milky hot coffee",
+  Espresso: "A short, strong shot of espresso",
+  // Beverages · Cold
+  "Cold Chocolate": "Chilled chocolate milk, thick and creamy",
+  "Taro Coffee": "Iced coffee layered with sweet taro milk",
+  "Peach Ice Tea": "Chilled tea with sweet peach",
+  "Lemon Ice Tea": "Chilled tea with a squeeze of lemon",
+  "Iced Americano": "Espresso over ice and cold water",
+  "Iced Latte": "Espresso with cold milk over ice",
+  Affogato: "Vanilla ice cream drowned in a hot espresso shot",
+  "Coffee Lemonade": "Espresso over fizzy lemonade, zesty and bold",
+  "Iced Espresso": "A shot of espresso poured over ice",
+  "Boho Blush": "Our pink house cooler, fruity and refreshing",
+  "Voodoo Mango": "Our tangy mango house cooler",
+  "Son of a Beach": "Our tropical house cooler",
+  "Milk Shake": "Thick, creamy shake in Taro, Thai Tea, Tiramisu or Hazelnut",
+  // House favourites
+  "Egg & Cheese Sandwich": "Toasted sandwich with fluffy egg and melted cheese",
+  "Veg Sandwich": "Toasted sandwich loaded with fresh vegetables",
+  "Chicken Sandwich": "Toasted sandwich with seasoned chicken",
+  "Chicken Yam Yam Burger": "Crispy chicken patty glazed in our sweet-spicy yangnyeom sauce",
+  "Chicken Burger": "Crispy chicken patty with fresh veggies and house sauce",
+  "Veg Burger": "Crispy veg patty with fresh veggies and house sauce",
+  "Veg Yam Yam Burger": "Crispy veg patty glazed in our sweet-spicy yangnyeom sauce",
+  "Veg Fried Rice": "Wok-tossed rice with fresh vegetables",
+  "Egg Fried Rice": "Wok-tossed rice with egg and spring onion",
+  "Chicken Fried Rice": "Wok-tossed rice with tender chicken and vegetables",
+  "Pork Kimchi Fried Rice": "Spicy kimchi fried rice with pork",
+  "Veg Kimchi Fried Rice": "Spicy kimchi fried rice with vegetables",
+  "Egg Kimchi Fried Rice": "Spicy kimchi fried rice with egg",
+  "Chicken Kimchi Fried Rice": "Spicy kimchi fried rice with chicken",
+  Bibimbap: "Korean rice bowl with sautéed vegetables, gochujang and sesame",
+  "Penne Arrabbiata": "Penne in a spicy tomato and garlic sauce",
+  "Penne Alfredo": "Penne in a creamy white cheese sauce",
+  "Jja Jangbap": "Steamed rice topped with Korean black bean sauce",
+  // Signatures
+  "French Fries with Cheese & Bacon": "Crispy fries topped with melted cheese and bacon",
+  "French Fries Salted": "Classic crispy salted fries",
+  "Yam Yam Fries": "Fries tossed in our sweet-spicy yangnyeom sauce",
+  "Veg Kimbap": "Korean seaweed rice rolls with fresh vegetables",
+  "Chicken Kimbap": "Korean seaweed rice rolls with chicken and vegetables",
+  "Cheese Kimbap": "Korean seaweed rice rolls with cheese and vegetables",
+  "Egg Kimbap": "Korean seaweed rice rolls with egg and vegetables",
+  "Chicken Mandu Momos": "Korean-style chicken dumplings, steamed or fried",
+  "Veg Mandu Momos": "Korean-style veg dumplings, steamed or fried",
+  "Veg Pan Fried Chilli Mandu": "Pan-fried veg dumplings tossed in spicy chilli sauce",
+  "Chicken Pan Fried Chilli Mandu": "Pan-fried chicken dumplings tossed in spicy chilli sauce",
+  Tteokbokki: "Chewy Korean rice cakes simmered in a rich, spicy sauce",
+  "Chicken Wings": "Crispy Korean fried wings, half or full, with your pick of sauce",
+  "Fried Chicken Boneless": "Crispy boneless Korean fried chicken, half or full",
+  Onigiri: "Japanese rice triangles wrapped in seaweed",
+  // Complete plates
+  "Jeyuk Bokkeum": "Tender pork stir-fried in a rich, spicy Korean chilli sauce",
+  "Chilli Chicken": "Crispy chicken tossed with peppers in a spicy chilli sauce",
+  "Chilli Tofu": "Crispy tofu tossed with peppers in a spicy chilli sauce",
+  "Kung Pao Chicken": "Chicken stir-fried with peanuts and dried chillies",
+  "Kung Pao Chicken Rice Bowl": "Kung pao chicken served over steamed rice",
+  "Veg Kimchi Jjigae": "Spicy Korean stew with kimchi, tofu and vegetables",
+  "Pork Kimchi Jjigae": "Spicy Korean stew with kimchi, pork and vegetables",
+  "Chicken Kimchi Jjigae": "Spicy Korean stew with kimchi, chicken and vegetables",
+  "Chicken Katsu": "Golden fried chicken cutlet with a savoury sauce",
+  // Ramen & more
+  "Chicken Ramen": "Spicy Korean ramen with chicken",
+  "Egg Ramen": "Spicy Korean ramen with egg",
+  "Veg Ramen": "Spicy Korean ramen with vegetables",
+  "Kimchi Ramen": "Spicy Korean ramen with tangy kimchi",
+  "Jja Jangmyeon": "Noodles in savoury Korean black bean sauce",
+  Japchae: "Stir-fried glass noodles with vegetables and sesame",
+  "Egg Fried Noodles": "Wok-tossed noodles with egg and vegetables",
+  "Chicken Fried Noodles": "Wok-tossed noodles with chicken and vegetables",
+  "Veg Fried Noodles": "Wok-tossed noodles with fresh vegetables",
+  "Bang Bang Noodles": "Noodles tossed in our spicy, creamy bang bang sauce",
+  "Veg Carbonara Buldak": "Creamy, fiery Korean buldak noodles with vegetables",
+  "Chicken Carbonara Buldak": "Creamy, fiery Korean buldak noodles with chicken",
+  "Pork Carbonara Buldak": "Creamy, fiery Korean buldak noodles with pork",
+  "Veg Chow Chow": "Stir-fried instant noodles with vegetables",
+  "Chicken Chow Chow": "Stir-fried instant noodles with chicken",
+  "Pork Chow Chow": "Stir-fried instant noodles with pork",
+  "Veg Wai Wai Sandekho": "Crunchy Wai Wai noodle salad with onion, tomato and spices",
+  "Veg Buldak Mandu Bowl": "Spicy buldak noodles with veg dumplings",
+  "Chicken Buldak Mandu Bowl": "Spicy buldak noodles with chicken dumplings",
+  // Desserts
+  "Nutella Cloud": "Light, fluffy dessert layered with rich Nutella",
+};
+
+const MOOD_BY_CATEGORY = { Desserts: ["share"], Beverages: ["drink"], SIGNATURES: ["share"], "HOUSE FAVORITES": ["meal"], "Complete Plates": ["meal"], "RAMEN & MORE": ["meal"] };
 
 export function rows() {
   const out = [];
   for (const cat of MENU) {
     for (const [sub, items] of Object.entries(cat.subs)) {
       for (const [name, rupees, diet, desc, opts = {}] of items) {
-        out.push({ category: cat.name, sub, name, rupees, diet, desc: desc ?? null, ...opts });
+        out.push({ category: cat.name, sub, name, rupees, diet, desc: DESCRIPTIONS[name] ?? desc ?? null, ...opts });
       }
     }
   }
@@ -185,11 +279,11 @@ if (args.includes("--md")) {
   for (const r of all) {
     if (r.category !== cur) {
       cur = r.category;
-      console.log(`\n### ${cur}\n\n| Sub-category | Dish | Price | Type | Notes |\n|---|---|---|---|---|`);
+      console.log(`\n### ${cur}\n\n| Sub-category | Dish | Price | Type | Description | Notes |\n|---|---|---|---|---|---|`);
     }
     const opts = (r.options ?? []).map((g) => `${g.name}: ${g.choices.map((c) => (c.price ? `${c.name} +₹${c.price / 100}` : c.name)).join(" / ")}`).join(" · ");
     const notes = [r.best && "⭐ Best Seller", r.spicy && "🌶 Spicy", opts && `Options → ${opts}`, r.check && `❓ ${r.check}`].filter(Boolean).join(" · ");
-    console.log(`| ${r.sub} | ${r.name} | ₹${r.rupees} | ${dietLabel[r.diet]} | ${notes} |`);
+    console.log(`| ${r.sub} | ${r.name} | ₹${r.rupees} | ${dietLabel[r.diet]} | ${r.desc ?? ""} | ${notes} |`);
   }
   process.exit(0);
 }
@@ -210,6 +304,10 @@ async function must(p) {
   return data;
 }
 
+// Options need migration 20261025000000_options.sql; without it, load dishes at base price.
+const { error: noOptions } = await db.from("menu_items").select("options").limit(1);
+const hasOptions = !noOptions;
+
 // Past orders keep their own name/price snapshots, so replacing the menu is safe.
 await must(db.from("menu_items").delete().not("id", "is", null));
 await must(db.from("menu_categories").delete().not("id", "is", null));
@@ -221,17 +319,18 @@ for (const [ci, cat] of MENU.entries()) {
     list.map(([name, rupees, diet, desc, opts = {}]) => ({
       category_id: row.id,
       name,
-      description: desc ?? null,
+      description: DESCRIPTIONS[name] ?? desc ?? null,
       price_paise: rupees * 100,
       diet,
       spice_level: opts.spicy ? 2 : 0,
       is_bestseller: !!opts.best,
       moods: MOOD_BY_CATEGORY[cat.name] ?? [],
       subcategory: sub,
-      options: opts.options ?? [],
+      ...(hasOptions ? { options: opts.options ?? [] } : {}),
       sort_order: (++i) * 10,
     })),
   );
   await must(db.from("menu_items").insert(items));
 }
-console.log("Live menu replaced.");
+console.log(`Live menu replaced: ${all.length} dishes.`);
+if (!hasOptions) console.log("Note: options NOT loaded. Run RUN_THIS_options.sql, then run this again with --yes.");

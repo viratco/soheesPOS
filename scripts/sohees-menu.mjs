@@ -101,6 +101,7 @@ export const MENU = [
       "Mandu (Momos)": [
         ["Chicken Mandu Momos", 470, n, "Korean-style dumplings, steamed or fried"],
         ["Veg Mandu Momos", 390, v, "Korean-style dumplings, steamed or fried"],
+        ["Bang Bang Mandu", 370, v, null, { best: true, options: [O("Choice", 1, 1, [["Veg"], ["Chicken", 100]])] }],
         ["Veg Pan Fried Chilli Mandu", 520, v, null, { spicy: true }],
         ["Chicken Pan Fried Chilli Mandu", 580, n, null, { spicy: true }],
       ],
@@ -220,6 +221,7 @@ export const DESCRIPTIONS = {
   "Egg Kimbap": "Korean seaweed rice rolls with egg and vegetables",
   "Chicken Mandu Momos": "Korean-style chicken dumplings, steamed or fried",
   "Veg Mandu Momos": "Korean-style veg dumplings, steamed or fried",
+  "Bang Bang Mandu": "Crispy mandu tossed in our spicy, creamy bang bang sauce",
   "Veg Pan Fried Chilli Mandu": "Pan-fried veg dumplings tossed in spicy chilli sauce",
   "Chicken Pan Fried Chilli Mandu": "Pan-fried chicken dumplings tossed in spicy chilli sauce",
   Tteokbokki: "Chewy Korean rice cakes simmered in a rich, spicy sauce",

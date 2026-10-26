@@ -255,7 +255,7 @@ insert into cafes (id, slug, name, legal_name, address, gstin, invoice_prefix, l
 values (
   '5011ee00-0000-4000-8000-000000000001', 'sohees', 'Sohee''s Kitchen', 'Sidhant Kapoor',
   'First Floor, BB 28, Block B, Ansal Golf Link-1, Greater Noida, Uttar Pradesh 201315',
-  '09HIZPK7132P1Z0', 'SK', '/logo.png', '/brand/sohees-logo-white.png'
+  '09HIZPK7132P1Z0', 'SK', null, '/brand/sohees-logo-white.png'
 )
 on conflict (id) do nothing;
 

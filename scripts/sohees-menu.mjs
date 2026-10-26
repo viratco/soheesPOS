@@ -5,8 +5,6 @@
 //         npm run load-sohees-menu -- --yes   → replaces the live menu
 //         npm run load-sohees-menu -- --md    → prints the review table (Markdown)
 import { readFileSync } from "fs";
-import { createClient } from "@supabase/supabase-js";
-import ws from "ws";
 
 // Photos copied from the café's DotPe menu into our Supabase storage (bucket "menu-photos").
 const PHOTOS = JSON.parse(readFileSync(new URL("./sohees-menu-photos.json", import.meta.url), "utf8"));
@@ -300,27 +298,21 @@ if (!args.includes("--yes")) {
   process.exit(0);
 }
 
-const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, {
-  auth: { persistSession: false },
-  realtime: { transport: ws },
-});
-async function must(p) {
-  const { data, error } = await p;
-  if (error) throw new Error(error.message);
-  return data;
-}
+const { db, must, cafeFromArgs } = await import("./lib/db.mjs");
+const cafe = await cafeFromArgs("sohees");
 
 // Options need migration 20261025000000_options.sql; without it, load dishes at base price.
 const { error: noOptions } = await db.from("menu_items").select("options").limit(1);
 const hasOptions = !noOptions;
 
 // Past orders keep their own name/price snapshots, so replacing the menu is safe.
-await must(db.from("menu_items").delete().not("id", "is", null));
-await must(db.from("menu_categories").delete().not("id", "is", null));
+// Only this café's menu; other cafés are never touched.
+await must(db.from("menu_items").delete().eq("cafe_id", cafe.id));
+await must(db.from("menu_categories").delete().eq("cafe_id", cafe.id));
 
 for (const [ci, cat] of MENU.entries()) {
   const [row] = await must(
-    db.from("menu_categories").insert({ name: cat.name, sort_order: (ci + 1) * 10, image_url: PHOTOS.categories[cat.name] ?? null }).select(),
+    db.from("menu_categories").insert({ cafe_id: cafe.id, name: cat.name, sort_order: (ci + 1) * 10, image_url: PHOTOS.categories[cat.name] ?? null }).select(),
   );
   let i = 0;
   const items = Object.entries(cat.subs).flatMap(([sub, list]) =>
@@ -341,5 +333,5 @@ for (const [ci, cat] of MENU.entries()) {
   );
   await must(db.from("menu_items").insert(items));
 }
-console.log(`Live menu replaced: ${all.length} dishes.`);
+console.log(`${cafe.name}: live menu replaced, ${all.length} dishes.`);
 if (!hasOptions) console.log("Note: options NOT loaded. Run RUN_THIS_options.sql, then run this again with --yes.");

@@ -1,15 +1,11 @@
-// Seeds menu, tables, and staff/kitchen logins. Safe to re-run: skips what already exists.
-// Usage: npm run seed   (reads backend/.env)
-import { createClient } from "@supabase/supabase-js";
-import ws from "ws"; // Node 20 has no built-in WebSocket
+// Seeds a demo menu, tables, and the staff/kitchen logins from backend/.env into ONE café
+// (Sohee's unless --cafe says otherwise). Safe to re-run: skips what already exists.
+// New cafés are made with `npm run new-cafe` instead.
+// Usage: npm run seed [-- --cafe <slug>]
+import { cafeFromArgs, db, must } from "./lib/db.mjs";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const secret = process.env.SUPABASE_SECRET_KEY;
-if (!url || !secret) {
-  console.error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SECRET_KEY in backend/.env");
-  process.exit(1);
-}
-const db = createClient(url, secret, { auth: { persistSession: false }, realtime: { transport: ws } });
+const cafe = await cafeFromArgs("sohees");
+const mine = (q) => q.eq("cafe_id", cafe.id);
 
 const MENU = [
   {
@@ -46,17 +42,11 @@ const MENU = [
 
 const TABLES = ["Table 1", "Table 2", "Table 3", "Table 4", "Table 5", "Table 6", "Window 1", "Window 2"];
 
-async function must(promise) {
-  const { data, error } = await promise;
-  if (error) throw new Error(error.message);
-  return data;
-}
-
 async function seedMenu() {
-  const { count } = await db.from("menu_categories").select("*", { count: "exact", head: true });
+  const { count } = await mine(db.from("menu_categories").select("*", { count: "exact", head: true }));
   if (count) return console.log(`menu: ${count} categories already exist, skipping`);
   for (const [ci, cat] of MENU.entries()) {
-    const [row] = await must(db.from("menu_categories").insert({ name: cat.name, sort_order: (ci + 1) * 10 }).select());
+    const [row] = await must(db.from("menu_categories").insert({ cafe_id: cafe.id, name: cat.name, sort_order: (ci + 1) * 10 }).select());
     await must(
       db.from("menu_items").insert(
         cat.items.map(([name, description, price_paise], i) => ({
@@ -73,9 +63,9 @@ async function seedMenu() {
 }
 
 async function seedTables() {
-  const { count } = await db.from("tables").select("*", { count: "exact", head: true });
+  const { count } = await mine(db.from("tables").select("*", { count: "exact", head: true }));
   if (count) return console.log(`tables: ${count} already exist, skipping`);
-  await must(db.from("tables").insert(TABLES.map((name, i) => ({ name, sort_order: (i + 1) * 10 }))));
+  await must(db.from("tables").insert(TABLES.map((name, i) => ({ cafe_id: cafe.id, name, sort_order: (i + 1) * 10 }))));
   console.log(`tables: added ${TABLES.length}`);
 }
 
@@ -88,7 +78,7 @@ async function ensureUser(email, password, role) {
     const { data: list } = await db.auth.admin.listUsers({ perPage: 1000 });
     userId = list.users.find((u) => u.email === email)?.id;
   } else throw new Error(error?.message);
-  await must(db.from("staff").upsert({ user_id: userId, role, display_name: email.split("@")[0] }));
+  await must(db.from("staff").upsert({ user_id: userId, role, display_name: email.split("@")[0], cafe_id: cafe.id }));
   console.log(`users: ${email} → ${role}`);
 }
 
@@ -120,12 +110,12 @@ async function seedDiscovery() {
   const { error } = await db.from("menu_items").select("diet").limit(1);
   if (error) return console.log("discovery: run migration 20261020010000_menu_discovery.sql first, skipping");
   for (const [name, fields] of Object.entries(DISCOVERY)) {
-    await must(db.from("menu_items").update(fields).eq("name", name));
+    await must(mine(db.from("menu_items").update(fields).eq("name", name)));
   }
-  let { data: cat } = await db.from("menu_categories").select("id").eq("name", "Combos").maybeSingle();
-  if (!cat) [cat] = await must(db.from("menu_categories").insert({ name: "Combos", sort_order: 5 }).select());
+  let { data: cat } = await mine(db.from("menu_categories").select("id").eq("name", "Combos")).maybeSingle();
+  if (!cat) [cat] = await must(db.from("menu_categories").insert({ cafe_id: cafe.id, name: "Combos", sort_order: 5 }).select());
   for (const [i, c] of COMBOS.entries()) {
-    const { data: exists } = await db.from("menu_items").select("id").eq("name", c.name).maybeSingle();
+    const { data: exists } = await mine(db.from("menu_items").select("id").eq("name", c.name)).maybeSingle();
     if (!exists) {
       await must(db.from("menu_items").insert({ ...c, category_id: cat.id, is_combo: true, moods: ["meal"], sort_order: (i + 1) * 10 }));
     }

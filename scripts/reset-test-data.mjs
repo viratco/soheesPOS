@@ -1,22 +1,17 @@
-// Deletes ALL orders, order items and payments, and restarts invoice numbers at 00001.
-// Menu, tables and staff logins are kept. Use once before going live.
-// Usage: npm run reset-test-data -- --yes
-import { createClient } from "@supabase/supabase-js";
-import ws from "ws";
+// Deletes ONE café's orders, order items and payments, and restarts its invoice numbers at 00001.
+// Its menu, tables and logins are kept. Other cafés are never touched.
+// Usage: npm run reset-test-data -- --cafe sohees --yes
+import { cafeFromArgs, db } from "./lib/db.mjs";
 
+const cafe = await cafeFromArgs();
 if (!process.argv.includes("--yes")) {
-  console.log("This deletes every order, item and payment and resets invoice numbers.");
-  console.log("Run again with --yes to confirm:  npm run reset-test-data -- --yes");
+  console.log(`This deletes every order, item and payment of ${cafe.name} and resets its invoice numbers.`);
+  console.log(`Run again with --yes to confirm:  npm run reset-test-data -- --cafe ${cafe.slug} --yes`);
   process.exit(0);
 }
 
-const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, {
-  auth: { persistSession: false },
-  realtime: { transport: ws },
-});
-
 async function wipe(table) {
-  const { error, count } = await db.from(table).delete({ count: "exact" }).not("id", "is", null);
+  const { error, count } = await db.from(table).delete({ count: "exact" }).eq("cafe_id", cafe.id);
   if (error) throw new Error(`${table}: ${error.message}`);
   console.log(`deleted ${count ?? 0} from ${table}`);
 }
@@ -24,6 +19,6 @@ async function wipe(table) {
 await wipe("payments");
 await wipe("order_items");
 await wipe("orders");
-const { error } = await db.from("invoice_counters").delete().not("fy", "is", null);
+const { error } = await db.from("invoice_counters").delete().eq("cafe_id", cafe.id);
 if (error) throw new Error(`invoice_counters: ${error.message}`);
-console.log("invoice numbers reset: the next paid bill is SK/<year>/00001");
+console.log(`invoice numbers reset: the next paid bill is ${cafe.invoice_prefix}/<year>/00001`);

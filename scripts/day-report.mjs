@@ -1,16 +1,12 @@
 // Daily pilot report: what happened at the café on a given day.
-// Usage: npm run report               (today, India time)
-//        npm run report -- 2026-10-25 (a specific day)
-import { createClient } from "@supabase/supabase-js";
-import ws from "ws";
+// Usage: npm run report                               (Sohee's, today, India time)
+//        npm run report -- 2026-10-25                 (a specific day)
+//        npm run report -- --cafe brew-bros 2026-10-25 (another café)
+import { cafeFromArgs, db } from "./lib/db.mjs";
 
-const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, {
-  auth: { persistSession: false },
-  realtime: { transport: ws },
-});
-
+const cafe = await cafeFromArgs("sohees");
 const IST = 5.5 * 3600_000;
-const day = process.argv[2] ?? new Date(Date.now() + IST).toISOString().slice(0, 10);
+const day = process.argv.find((a) => /^\d{4}-\d{2}-\d{2}$/.test(a)) ?? new Date(Date.now() + IST).toISOString().slice(0, 10);
 const start = new Date(new Date(`${day}T00:00:00Z`).getTime() - IST);
 const end = new Date(start.getTime() + 24 * 3600_000);
 
@@ -27,6 +23,7 @@ const ist = (iso) => new Date(iso).toLocaleTimeString("en-IN", { hour: "numeric"
 const { data: orders, error } = await db
   .from("orders")
   .select("*, tables(name), order_items(*), payments(method, amount_paise)")
+  .eq("cafe_id", cafe.id)
   .gte("created_at", start.toISOString())
   .lt("created_at", end.toISOString())
   .order("created_at");
@@ -58,7 +55,7 @@ const top = new Map();
 for (const i of items.filter((i) => i.status !== "void")) top.set(i.name_snapshot, (top.get(i.name_snapshot) ?? 0) + i.qty);
 
 const out = [];
-out.push(`# Day report · ${day}`, "");
+out.push(`# ${cafe.name} · day report · ${day}`, "");
 out.push("## Orders");
 out.push(`- Tables served: ${orders.length} (paid ${paid.length}, still open ${orders.filter((o) => o.status === "open").length}, cancelled ${orders.filter((o) => o.status === "cancelled").length})`);
 out.push(`- Items ordered: ${qty(items)} · by QR ${qty(qrItems)} (${items.length ? Math.round((qty(qrItems) / qty(items)) * 100) : 0}%) · by staff ${qty(staffItems)}`);

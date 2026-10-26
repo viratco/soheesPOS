@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "seed": "node --env-file=.env scripts/seed.mjs",
-    "load-menu": "node --env-file=.env scripts/load-menu.mjs",
     "report": "node --env-file=.env scripts/day-report.mjs",
     "reset-test-data": "node --env-file=.env scripts/reset-test-data.mjs",
-    "load-sohees-menu": "node --env-file=.env scripts/sohees-menu.mjs"
+    "load-sohees-menu": "node --env-file=.env scripts/sohees-menu.mjs",
+    "new-cafe": "node --env-file=.env scripts/new-cafe.mjs",
+    "add-login": "node --env-file=.env scripts/add-login.mjs",
+    "cafes": "node --env-file=.env scripts/cafes.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.109.0",

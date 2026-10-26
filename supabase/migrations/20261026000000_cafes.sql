@@ -30,7 +30,7 @@ create table if not exists cafes (
 
 insert into cafes (id, slug, name, legal_name, address, gstin, invoice_prefix, logo_url, qr_logo_url)
 values (
-  '5011ee00-0000-4000-8000-000000000001', 'sohees', 'Sohee''s Kitchen', 'Sidhant Kapoor',
+  '5011ee00-0000-4000-8000-000000000001', 'sohees', 'Sohee''s Kitchen', null,
   'First Floor, BB 28, Block B, Ansal Golf Link-1, Greater Noida, Uttar Pradesh 201315',
   '09HIZPK7132P1Z0', 'SK', null, '/brand/sohees-logo-white.png'
 )

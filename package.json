@@ -10,7 +10,8 @@
     "load-sohees-menu": "node --env-file=.env scripts/sohees-menu.mjs",
     "new-cafe": "node --env-file=.env scripts/new-cafe.mjs",
     "add-login": "node --env-file=.env scripts/add-login.mjs",
-    "cafes": "node --env-file=.env scripts/cafes.mjs"
+    "cafes": "node --env-file=.env scripts/cafes.mjs",
+    "demo": "node --env-file=.env scripts/demo-cafe.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.109.0",

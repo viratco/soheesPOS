@@ -276,12 +276,36 @@ for (let d = 30; d >= 0; d--) {
 }
 bills.sort((a, b) => a.closed - b.closed);
 
+// Guests who gave their name and number on the QR menu. A few regulars come back often,
+// most come once or twice. Numbers are made up (dummy series 70000 xxxxx).
+const FIRST = ["Aarav", "Ananya", "Rohan", "Priya", "Kabir", "Isha", "Arjun", "Meera", "Vikram", "Sneha", "Aditya", "Riya",
+  "Karan", "Neha", "Siddharth", "Pooja", "Rahul", "Tanya", "Nikhil", "Simran", "Varun", "Aditi", "Dev", "Kavya", "Yash", "Nisha"];
+const LAST = ["Sharma", "Verma", "Gupta", "Singh", "Mehta", "Kapoor", "Agarwal", "Malhotra", "Jain", "Bansal", "Chauhan", "Arora", "Saxena", "Yadav"];
+const GUESTS = Array.from({ length: 140 }, (_, i) => ({
+  name: `${FIRST[int(0, FIRST.length - 1)]} ${LAST[int(0, LAST.length - 1)]}`,
+  phone: `70000${String(10000 + i * 37).slice(-5)}`,
+  marketing_consent: chance(0.45),
+  weight: i < 15 ? 12 : i < 45 ? 3 : 1, // regulars first
+}));
+const guestRows = [];
+function addGuests(orderId, at) {
+  const n = chance(0.25) ? 2 : 1;
+  const seen = new Set();
+  for (let k = 0; k < n; k++) {
+    const g = pickWeighted(GUESTS, (x) => x.weight);
+    if (seen.has(g.phone)) continue;
+    seen.add(g.phone);
+    guestRows.push({ order_id: orderId, name: g.name, phone: g.phone, marketing_consent: g.marketing_consent, created_at: new Date(at).toISOString() });
+  }
+}
+
 const orders = [], items = [], payments = [], counters = new Map();
 for (const b of bills) {
   const id = randomUUID();
   const lines = Array.from({ length: pickWeighted([1, 2, 3, 4, 5], (k) => [2, 5, 5, 3, 1][k - 1]) }, () => line(id, "served", b.created));
   if (chance(0.04)) lines.push({ ...line(id, "void", b.created), accepted_at: null, ready_at: null }); // a rejected extra
   items.push(...lines);
+  if (lines.some((l) => l.source === "customer") && chance(0.85)) addGuests(id, b.created);
   const subtotal = lines.filter((l) => l.status === "served").reduce((s, l) => s + l.price_paise_snapshot * l.qty, 0);
   const discount = chance(0.08) ? Math.floor((subtotal * 1000 + 5000) / 10000) : 0;
   const gst = Math.floor(((subtotal - discount) * 500 + 5000) / 10000);
@@ -324,11 +348,13 @@ for (const [t, state, mins, k] of LIVE) {
     subtotal_paise: null, discount_paise: 0, discount_reason: null, gst_rate_bps: null, gst_paise: null, total_paise: null, invoice_no: null,
   });
   for (let i = 0; i < k; i++) items.push(line(id, state, at, state === "new" ? "customer" : undefined));
+  if (state === "new" || chance(0.6)) addGuests(id, at);
 }
 
 await inChunks("orders", orders);
 await inChunks("order_items", items);
 await inChunks("payments", payments);
+await inChunks("order_guests", guestRows);
 for (const [year, last] of counters) await must(db.from("invoice_counters").insert({ cafe_id: cafe.id, fy: year, last }));
 
 /* ───────────────────────── 7. supplier purchases ───────────────────────── */
@@ -376,6 +402,7 @@ const spend = purchases.reduce((s, p) => s + p.total_paise, 0);
 console.log(`
 ${cafe.name} is ready for a demo
   ${payments.length} paid bills over 31 days · net sales ${rupees(net)}
+  ${new Set(guestRows.map((g) => g.phone)).size} customers with name + number (${guestRows.length} visits)
   ${purchases.length} supplier bills · stock ${rupees(spend)} (${Math.round((spend / net) * 100)}% of sales)
   Busy right now: ${LIVE.map(([t, s]) => `Table ${t} (${s === "new" ? "new order" : s === "pending" ? "in kitchen" : s === "ready" ? "food ready" : "served"})`).join(", ")}
   Logins: print/demo-cafe-logins.txt

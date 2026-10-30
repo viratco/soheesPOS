@@ -17,7 +17,7 @@ const O = (name, min, max, choices) => ({ name, min, max, choices: choices.map((
 const VEG_CHICKEN_PORK = (chicken, pork) => [O("Choice", 1, 1, [["Veg"], ["Chicken", chicken], ["Pork", pork]])];
 const HALF_FULL_SAUCES = [
   O("Choice", 1, 1, [["Half"], ["Full", 140]]),
-  O("Add On", 0, 3, [["Jja Jang Sauce", 50], ["Honey Butter", 50], ["Yum Yum Sauce", 50]]),
+  O("Add On", 0, 3, [["Jja Jang Sauce", 50], ["Honey Butter", 50], ["Yam Yam Sauce", 50]]),
 ];
 
 export const MENU = [
@@ -28,9 +28,10 @@ export const MENU = [
         ["Chai", 190, v],
         ["Americano", 220, v],
         ["Cappuccino", 240, v],
-        ["Hot Choco", 250, v],
+        ["Hot Chocolate", 250, v],
         ["Hot Coffee", 220, v],
         ["Espresso", 190, v],
+        ["Matcha Latte", 290, v],
       ],
       Cold: [
         ["Cold Chocolate", 250, v],
@@ -45,8 +46,14 @@ export const MENU = [
         ["Boho Blush", 235, v],
         ["Voodoo Mango", 235, v, null, { check: "Spelled 'Vodoo Mango' on DotPe" }],
         ["Son of a Beach", 300, v],
+        ["Matcha Latte (Cold)", 290, v],
+        ["Iced Strawberry Matcha Latte", 320, v],
+        ["Mango Matcha", 390, v],
+        ["Iced Mocha", 320, v],
+        ["Cold Drinks", 100, v],
       ],
-      "Milk Shake": [["Milk Shake", 290, v, null, { options: [O("Flavour", 1, 1, [["Taro"], ["Thai Tea"], ["Tiramisu"], ["Hazelnut"]])] }]],
+      "Milk Shake": [["Milk Shake", 290, v, null, { options: [O("Flavour", 1, 1, [["Matcha"], ["Taro"], ["Thai Tea"], ["Tiramisu"], ["Hazelnut"]])] }]],
+      "Bubble Tea": [["Bubble Tea", 290, v, null, { options: [O("Flavour", 1, 1, [["Matcha"], ["Taro"], ["Hazelnut"], ["Tiramisu"], ["Thai Tea"]])] }]],
     },
   },
   {
@@ -111,6 +118,7 @@ export const MENU = [
       "Fried Chicken": [
         ["Chicken Wings", 350, n, null, { options: HALF_FULL_SAUCES }],
         ["Fried Chicken Boneless", 450, n, "Boneless", { best: true, options: HALF_FULL_SAUCES }],
+        ["Fried Chicken With Bone", 390, n, null, { options: [O("Choice", 1, 1, [["Half"], ["Full", 130]]), HALF_FULL_SAUCES[1]] }],
       ],
       Onigiri: [["Onigiri", 440, v, null, { best: true, options: VEG_CHICKEN_PORK(50, 80) }]],
     },
@@ -158,6 +166,8 @@ export const MENU = [
         ["Veg Wai Wai Sandekho", 250, v],
         ["Veg Buldak Mandu Bowl", 600, v],
         ["Chicken Buldak Mandu Bowl", 700, n],
+        ["Bibim-Guksu", 500, v],
+        ["Kong-Guksu", 650, v],
       ],
     },
   },
@@ -173,7 +183,17 @@ export const DESCRIPTIONS = {
   Chai: "Kadak chai brewed with milk and warm spices",
   Americano: "Double espresso topped with hot water",
   Cappuccino: "Espresso with steamed milk and a thick foam",
-  "Hot Choco": "Rich, creamy hot chocolate",
+  "Hot Chocolate": "Rich, creamy hot chocolate",
+  "Matcha Latte": "Hot, creamy matcha with steamed milk",
+  "Matcha Latte (Cold)": "Chilled matcha with milk over ice",
+  "Iced Strawberry Matcha Latte": "Iced matcha latte with strawberry",
+  "Mango Matcha": "Matcha layered with mango",
+  "Iced Mocha": "Chilled coffee with chocolate",
+  "Cold Drinks": "Subject to availability",
+  "Bubble Tea": "Pick Matcha, Taro, Hazelnut, Tiramisu or Thai Tea",
+  "Fried Chicken With Bone": "Crispy bone-in Korean fried chicken, half or full",
+  "Bibim-Guksu": "Spicy Korean cold noodles",
+  "Kong-Guksu": "Korean noodles in chilled soy-milk broth",
   "Hot Coffee": "Classic milky hot coffee",
   Espresso: "A short, strong shot of espresso",
   // Beverages · Cold
@@ -189,7 +209,7 @@ export const DESCRIPTIONS = {
   "Boho Blush": "Our pink house cooler, fruity and refreshing",
   "Voodoo Mango": "Our tangy mango house cooler",
   "Son of a Beach": "Our tropical house cooler",
-  "Milk Shake": "Thick, creamy shake in Taro, Thai Tea, Tiramisu or Hazelnut",
+  "Milk Shake": "Thick, creamy shake in Matcha, Taro, Thai Tea, Tiramisu or Hazelnut",
   // House favourites
   "Egg & Cheese Sandwich": "Toasted sandwich with fluffy egg and melted cheese",
   "Veg Sandwich": "Toasted sandwich loaded with fresh vegetables",

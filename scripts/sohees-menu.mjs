@@ -20,6 +20,8 @@ const HALF_FULL_SAUCES = [
   O("Add On", 0, 3, [["Jja Jang Sauce", 50], ["Honey Butter", 50], ["Yam Yam Sauce", 50]]),
 ];
 
+const MANDU_STYLE = [O("Style", 1, 1, [["Steam"], ["Pan Fry", 50]])];
+
 export const MENU = [
   {
     name: "Beverages",
@@ -41,11 +43,9 @@ export const MENU = [
         ["Iced Americano", 220, v, null, { check: "Shown as 'Americano' under Cold on DotPe; renamed so it isn't confused with the hot one" }],
         ["Iced Latte", 250, v],
         ["Affogato", 310, v],
-        ["Coffee Lemonade", 250, v],
         ["Iced Espresso", 190, v],
         ["Boho Blush", 235, v],
         ["Voodoo Mango", 235, v, null, { check: "Spelled 'Vodoo Mango' on DotPe" }],
-        ["Son of a Beach", 300, v],
         ["Matcha Latte (Cold)", 290, v],
         ["Iced Strawberry Matcha Latte", 320, v],
         ["Mango Matcha", 390, v],
@@ -104,8 +104,8 @@ export const MENU = [
         ["Egg Kimbap", 360, e],
       ],
       "Mandu (Momos)": [
-        ["Chicken Mandu Momos", 470, n, "Korean-style dumplings, steamed or fried"],
-        ["Veg Mandu Momos", 390, v, "Korean-style dumplings, steamed or fried"],
+        ["Chicken Mandu Momos", 470, n, null, { options: MANDU_STYLE }],
+        ["Veg Mandu Momos", 390, v, null, { options: MANDU_STYLE }],
         ["Bang Bang Mandu", 370, v, null, { best: true, options: [O("Choice", 1, 1, [["Veg"], ["Chicken", 100]])] }],
         ["Veg Pan Fried Chilli Mandu", 520, v, null, { spicy: true }],
         ["Chicken Pan Fried Chilli Mandu", 580, n, null, { spicy: true }],
@@ -131,7 +131,7 @@ export const MENU = [
         ["Chilli Chicken", 450, n],
         ["Chilli Tofu", 390, v],
         ["Kung Pao Chicken", 560, n],
-        ["Kung Pao Chicken Rice Bowl", 660, n, null, { best: true, check: "Only seen in the Best Seller list. Placed under Stir Fry. OK?" }],
+        ["Kung Pao Chicken Rice Bowl", 650, n, null, { best: true }],
       ],
       "Kimchi Jjigae": [
         ["Veg Kimchi Jjigae", 470, v, "Spicy Korean stew with kimchi and vegetables", { check: "DotPe's description for the veg one mentions pork; changed to 'kimchi and vegetables'" }],
@@ -139,6 +139,7 @@ export const MENU = [
         ["Chicken Kimchi Jjigae", 520, n, "Spicy Korean stew with kimchi, chicken and vegetables"],
       ],
       "Chicken Katsu": [["Chicken Katsu", 530, n, "Golden fried chicken cutlet with a savoury sauce"]],
+      Extras: [["Extra Rice Bowl", 100, v]],
     },
   },
   {
@@ -183,6 +184,7 @@ export const DESCRIPTIONS = {
   Chai: "Kadak chai brewed with milk and warm spices",
   Americano: "Double espresso topped with hot water",
   Cappuccino: "Espresso with steamed milk and a thick foam",
+  "Extra Rice Bowl": "A bowl of steamed rice on the side",
   "Hot Chocolate": "Rich, creamy hot chocolate",
   "Matcha Latte": "Hot, creamy matcha with steamed milk",
   "Matcha Latte (Cold)": "Chilled matcha with milk over ice",
@@ -204,11 +206,9 @@ export const DESCRIPTIONS = {
   "Iced Americano": "Espresso over ice and cold water",
   "Iced Latte": "Espresso with cold milk over ice",
   Affogato: "Vanilla ice cream drowned in a hot espresso shot",
-  "Coffee Lemonade": "Espresso over fizzy lemonade, zesty and bold",
   "Iced Espresso": "A shot of espresso poured over ice",
   "Boho Blush": "Our pink house cooler, fruity and refreshing",
   "Voodoo Mango": "Our tangy mango house cooler",
-  "Son of a Beach": "Our tropical house cooler",
   "Milk Shake": "Thick, creamy shake in Matcha, Taro, Thai Tea, Tiramisu or Hazelnut",
   // House favourites
   "Egg & Cheese Sandwich": "Toasted sandwich with fluffy egg and melted cheese",
